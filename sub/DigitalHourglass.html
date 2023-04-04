@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href = "/styles.css" rel = "stylesheet">
+    <title>Digital Hourglass | Dawnlight Dev</title>
+</head>
+<body>
+    <div class="banner-container">
+        <div class="banner">
+          <h1 id = "header">Dawnlight Dev</h1>
+        </div>
+    </div>      
+    <nav id = "navbar">
+        <ul id = "navbarList">
+            <li>Home</li>
+            <li>About</li>
+            <li>Games</li>
+            <li><a href = "/arduino.html">Arduino</a></li>
+            <li>Contact</li>
+        </ul>
+    </nav>
+
+    <h1 id = "body">Digital Hourglass</h1>
+    <p id = "body">For this project, we create a digital hourglass that lights up 6 LED lights as time passes and repeatedly blinks
+        those 6 LED lights constantly when the hourglass's time is up.
+    </p>
+
+    <h3 id = "body">Parts Required For Assembly</h3>
+    <ul id = "body">
+        <li>Power Cables</li>
+        <li>6 220ohm resistor</li>
+        <li>1 10kilohm resistor</li>
+        <li>1 Tilt Sensor</li>
+        <li>1 Small Jumper Wire</li>
+        <li>6 Medium/Large Jumper Wires</li>
+        <li>6 LED lights (can be any colour)</li>
+    </ul>
+
+    <img src = "/Assets/IMG_1035.jpg" width = 500px>
+
+    <br>
+    
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/DqmO5aHToy4" title="YouTube video player" frameborder="0" allow="accelerometer; 
+    autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br>
+
+    <code><pre>const int switchPin = 8;
+        unsigned long previousTime = 0;
+        int switchState = 0;
+        int prevSwitchState = 0;
+        int led = 2;
+        long interval = 6000;
+        
+        void setup() {
+          // put your setup code here, to run once:
+          for (int x = 2; x < 8; x++) {
+            pinMode(x, OUTPUT);
+          }
+          pinMode(switchPin, INPUT);
+        }
+        
+        void loop() {
+          // put your main code here, to run repeatedly:
+          unsigned long currentTime = millis();
+        
+          if (currentTime - previousTime > interval) {
+            previousTime = currentTime;
+            digitalWrite(led, HIGH);
+            led++;
+        
+            if (led <= 8) {
+              for (int x = 2; x < 8; x++) {
+                digitalWrite(x, LOW);
+                delay(1000);
+                digitalWrite(x, HIGH);
+                delay(1000);
+                //led = 2;
+              }
+            }
+        
+            switchState = digitalRead(switchPin);
+        
+            if (switchState != prevSwitchState) {
+              for (int x = 2; x < 8; x++) {
+                digitalWrite(x, LOW);
+              }
+        
+              led = 2;
+              previousTime = currentTime;
+            }
+        
+            prevSwitchState = switchState;
+          }
+        }        
+        </pre></code>
+    
+</body>
+<footer>
+    © Dawnlight Dev, 2023
+</footer>
+</html>
