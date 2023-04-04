@@ -1,0 +1,89 @@
+body {
+  margin: 0;
+  font-family: calibri;
+  font-size: 1.5rem;
+  color:#402060;
+  background-color: #E6E6FA;
+  text-align: center;
+}
+
+footer {
+  text-align: left;
+  margin: 10px;
+}
+
+.bodyContainer {
+  margin: 10px;
+}
+
+.banner-container {
+    display: flex;
+    height: 25vh;
+    overflow: hidden;
+    margin: 0;
+  }
+  
+  .banner {
+    background-image: url(assets/space.png);
+    background-repeat: repeat;
+    height: 25vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+  
+  #header {
+    color: white;
+    font-size: 36px;
+    text-shadow: 1px 1px black;
+    font-family: "Old School Adventures", calibri;
+  }
+
+  nav {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 5vh;
+    background-color: #402060;
+    padding: 5px;
+  }
+  
+  #navbarList {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 25%;
+  }
+
+  #cont {
+    position: relative;
+    left: 17%;
+    max-width: 1000px;
+  }
+
+  iframe {
+    display: block;
+    margin: 0 auto;
+ }
+
+ img {
+    display: block;
+    margin: 0 auto;
+ }
+
+code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#body {
+  text-align: center;
+}
+  
+  
