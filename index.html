@@ -13,13 +13,20 @@
           <h1 id = "header">Dawnlight Dev</h1>
         </div>
     </div>      
-    <nav id = "navbar">
-        <ul id = "navbarList">
-            <li>Home</li>
-            <li>About</li>
-            <li>Games</li>
-            <li><a href = "arduino.html">Arduino</a></li>
-            <li>Contact</li>
+    <nav id="navbar">
+        <ul id="navbarList">
+            <li class="navLink"><a href="index.html">Home</a></li>
+            <li class="navLink">About</li>
+            <li class="navLink">Games</li>
+            <div class="dropdown">
+                <button class="dropbtn">Devlogs
+                    <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="devlogs.html" class="dropdown-link">Mahou Shoujo Monogatari</a>
+                </div>
+            </div>
+            <li class="navLink">Contact</li>
         </ul>
     </nav>
 
@@ -37,4 +44,6 @@
 <footer>
     © Dawnlight Dev, 2023
 </footer>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src = "index.js"></script>
 </html>
