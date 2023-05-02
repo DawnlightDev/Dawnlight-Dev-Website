@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href = "/styles.css" rel = "stylesheet">
+    <title>Touchy Feely Lamp | Dawnlight Dev</title>
+</head>
+<body>
+    <div class="banner-container">
+        <div class="banner">
+          <h1 id = "header">Dawnlight Dev</h1>
+        </div>
+    </div>      
+    <nav id = "navbar">
+        <ul id = "navbarList">
+            <li>Home</li>
+            <li>About</li>
+            <li>Games</li>
+            <li><a href = "/arduino.html">Arduino</a></li>
+            <li>Contact</li>
+        </ul>
+    </nav>
+
+    <h1 id = "body">Touchy Feely Lamp</h1>
+    <p id = "body">For this project, we create an LED that lights up when responding to touching a piece of tin foil with a potentiometre pin
+        that allows for more control on what colour the LED shows up as when the tin foil is touched.
+    </p>
+
+    <h3 id = "body">Parts Required For Assembly</h3>
+    <ul id = "body">
+        <li>Negative Power Cable connected to Ground</li>
+        <li>1 220ohm resistor</li>
+        <li>1 1megohm resistor</li>
+        <li>1 4 prong LED Light</li>
+        <li>1 foil piece</li>
+        <li>4 Medium/Large Jumper Wire</li>
+    </ul>
+
+    <img src = "/Assets/IMG_1166.jpg" width = 500px>
+
+    <br>
+    
+    <iframe width="560" height="315" src="/Assets/IMG_1168.mov" title="YouTube video player" frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <br>
+
+    <code><pre>
+#include <CapacitiveSensor.h>
+    CapacitiveSensor capSensor = CapacitiveSensor(4, 2);
+
+    int threshold = 1000;
+    const int redLEDPin = 9;
+    const int blueLEDPin = 10;
+    const int greenLEDPin = 11;
+    const int potPin = A0;
+
+    void setup() {
+    // put your setup code here, to run once:
+    Serial.begin(9600);
+    pinMode(redLEDPin, OUTPUT);
+    pinMode(blueLEDPin, OUTPUT);
+    pinMode(greenLEDPin, OUTPUT);
+    }
+
+    void loop() {
+    // put your main code here, to run repeatedly:
+    long sensorValue = capSensor.capacitiveSensor(30);
+
+    // map the potentiometer value to a range of 0-255
+    int potValue = map(analogRead(potPin), 0, 1023, 0, 255);
+
+    Serial.println(potValue);
+
+    if (sensorValue > threshold) {
+    // adjust the color values based on the potentiometer position
+    int redValue = map(potValue, 0, 255, 255, 0);
+    int greenValue = map(potValue, 0, 255, 0, 255);
+    int blueValue = map(potValue, 0, 255, 0, 255);
+    greenValue = 255 - redValue;
+
+    analogWrite(redLEDPin, redValue);
+    analogWrite(blueLEDPin, blueValue);
+    analogWrite(greenLEDPin, greenValue);
+    } else {
+    digitalWrite(redLEDPin, LOW);
+    digitalWrite(blueLEDPin, LOW);
+    digitalWrite(greenLEDPin, LOW);
+    }
+
+    delay(20);
+    }
+
+
+    </pre></code>
+    
+</body>
+<footer>
+    © Dawnlight Dev, 2023
+</footer>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href = "/styles.css" rel = "stylesheet">
+    <title>Tweak The Logo | Dawnlight Dev</title>
+</head>
+<body>
+    <div class="banner-container">
+        <div class="banner">
+          <h1 id = "header">Dawnlight Dev</h1>
+        </div>
+    </div>      
+    <nav id = "navbar">
+        <ul id = "navbarList">
+            <li>Home</li>
+            <li>About</li>
+            <li>Games</li>
+            <li><a href = "/arduino.html">Arduino</a></li>
+            <li>Contact</li>
+        </ul>
+    </nav>
+
+    <h1 id = "body">Tweak The Logo</h1>
+    <p id = "body">For this project, we create a program that has two potentiometres as input, one of which will change the background colour of the Logo
+        and the other changing the colour of the logo directly using Processing 4.
+    </p>
+
+    <h3 id = "body">Parts Required For Assembly</h3>
+    <ul id = "body">
+        <li>Power Cables</li>
+        <li>2 potentiometres</li>
+        <li>2 Large Jumper Wires</li>
+        <li>4 Small Jumper Wires</li>
+    </ul>
+
+    <img src = "/Assets/IMG_1180.jpg" width = 500px>
+
+    <br>
+    
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/A4vfnxXpB9Y" title="YouTube video player" frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <br>
+
+    <code><pre>
+       //ARDUINO 
+    void setup() {
+    Serial.begin(9600);
+    }
+    
+    void loop() {
+    int pot1Val = analogRead(A0) / 4;
+    int pot2Val = analogRead(A1) / 4;
+    
+    Serial.print(pot1Val);
+    Serial.print(",");
+    Serial.println(pot2Val);
+    
+    delay(10);
+    }
+
+    //Processing
+    // PROCESSING CODE
+    
+    import processing.serial.*;
+    
+    Serial myPort;
+    
+    PImage logo;
+    int bgColour = 0;
+    int logoColour = 0;
+    
+    void setup() {
+    size(200, 200); // change the canvas size to an appropriate size
+    surface.setResizable(true);
+    colorMode(HSB, 255);
+    
+    logo = loadImage("http://arduino.cc/arduino_logo.png");
+    surface.setSize(logo.width, logo.height);
+    
+    println("Available serial ports: ");
+    println(Serial.list());
+    
+    myPort = new Serial(this, Serial.list()[0], 9600);
+    }
+    
+    void draw() {
+    if (myPort.available() > 0) {
+    String values = myPort.readStringUntil('\n');
+    if (values != null) {
+    values = values.trim();
+    String[] vals = split(values, ',');
+    if (vals.length == 2) {
+    bgColour = Integer.parseInt(vals[0]);
+    logoColour = Integer.parseInt(vals[1]);
+    }
+    }
+    }
+    background(bgColour, 255, 255);
+    tint(logoColour, 255, 255);
+    image(logo, 0, 0);
+    }
+
+
+    </pre></code>
+    
+</body>
+<footer>
+    © Dawnlight Dev, 2023
+</footer>
+</html>
