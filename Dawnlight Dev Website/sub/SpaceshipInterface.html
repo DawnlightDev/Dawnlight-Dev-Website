@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href = "/styles.css" rel = "stylesheet">
+    <title>Spaceship Interface | Dawnlight Dev</title>
+</head>
+<body>
+    <div class="banner-container">
+        <div class="banner">
+          <h1 id = "header">Dawnlight Dev</h1>
+        </div>
+    </div>      
+    <nav id = "navbar">
+        <ul id = "navbarList">
+            <li>Home</li>
+            <li>About</li>
+            <li>Games</li>
+            <li><a href = "/arduino.html">Arduino</a></li>
+            <li>Contact</li>
+        </ul>
+    </nav>
+
+    <h1 id = "body">Spaceship Interface</h1>
+    <p id = "body">For this project, we create a spaceship interface that has one LED light that is constantly on and blinks between two others when the button
+        is pressed with an additional LED light that pulses regardless of if the button is pressed or not.
+    </p>
+
+    <h3 id = "body">Parts Required For Assembly</h3>
+    <ul id = "body">
+        <li>Power Cables</li>
+        <li>4 220ohm resistor</li>
+        <li>1 10kilohm resistor</li>
+        <li>2 Red LED Lights</li>
+        <li>1 Green LED Light</li>
+        <li>1 Blue LED Light</li>
+        <li>1 Switch</li>
+        <li>5 Medium/Large Jumper Wire</li>
+    </ul>
+
+    <img src = "/Assets/IMG_1011.jpg" width = 500px>
+
+    <br>
+    
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/A4vfnxXpB9Y" title="YouTube video player" frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <br>
+
+    <code><pre>
+        int switchState = 0;
+int pulseState = 0;
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(2, INPUT);
+  pinMode(6, OUTPUT);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  switchState = digitalRead(2);
+  pulseState = digitalRead(6);
+
+  if (switchState == LOW) {
+    digitalWrite(3, LOW);
+    digitalWrite(4, LOW);
+    digitalWrite(5, HIGH);
+  }
+
+
+  else {
+    digitalWrite(3, HIGH);
+    digitalWrite(4, LOW);
+    digitalWrite(5, LOW);
+
+    delay(250);
+
+    digitalWrite(3, LOW);
+    digitalWrite(4, HIGH);
+    delay(250);
+  }
+
+  if(pulseState == LOW) {
+    delay(1000);
+    digitalWrite(6, HIGH);
+  }
+
+  else if(pulseState == HIGH) {
+    delay(1000);
+    digitalWrite(6, LOW);
+  }
+
+
+}
+
+    </pre></code>
+    
+</body>
+<footer>
+    © Dawnlight Dev, 2023
+</footer>
+</html>

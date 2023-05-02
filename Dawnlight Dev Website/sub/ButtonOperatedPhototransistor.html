@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href = "/styles.css" rel = "stylesheet">
+    <title>Button Operated Phototransistor LED - Dawnlight Dev</title>
+</head>
+<body>
+    <div class="banner-container">
+        <div class="banner">
+          <h1 id = "header">Dawnlight Dev</h1>
+        </div>
+    </div>      
+    <nav id = "navbar">
+        <ul id = "navbarList">
+            <li>Home</li>
+            <li>About</li>
+            <li>Games</li>
+            <li><a href = "/arduino.html">Arduino</a></li>
+            <li>Contact</li>
+        </ul>
+    </nav>
+
+    <h1 id = "body">Button Operated Phototransistor LED</h1>
+    <p id = "body">For this project, the phototransistors read values of red, blue and green and convert them into values between 0 and 255
+        in order to be written to the LED so that the LED outputs a colour based on the RGB values it is receiving. In this instance, there is also 
+        a switch that allows the LED to remain a stable red colour until the switch is pressed, which it will then take the RGB values from the 
+        phototransistors and display a colour.
+    </p>
+
+    <h3 id = "body">Parts Required For Assembly</h3>
+    <ul id = "body">
+        <li>Power Cables</li>
+        <li>3 10kilohm resistors</li>
+        <li>4 220ohm resistors</li>
+        <li>1 4 prong LED</li>
+        <li>3 Phototransistors</li>
+        <li>1 Switch</li>
+        <li>4 Small Jumper Wires</li>
+        <li>9 Medium/Large Jumper Wires</li>
+    </ul>
+
+    <img src = "/Assets/IMG_0871.jpg" width = 500px>
+
+    <br>
+    
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/dNZoD-x5bmQ" title="YouTube video player" frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+    <br>
+
+    <h3 id = "body">Code</h3>
+    <code><pre>
+        const int greenLEDPin = 9;
+        const int redLEDPin = 10;
+        const int blueLEDPin = 11;
+
+        const int redSensorPin = A0;
+        const int greenSensorPin = A1;
+        const int blueSensorPin = A2;
+
+        int switchState = 0;
+
+        int redValue = 0;
+        int greenValue = 0;
+        int blueValue = 0;
+
+        int redSensorValue = 0;
+        int greenSensorValue = 0;
+        int blueSensorValue = 0;
+
+        void setup() {
+        // put your setup code here, to run once:
+        Serial.begin(9600);
+
+        pinMode(greenLEDPin, OUTPUT);
+        pinMode(redLEDPin, OUTPUT);
+        pinMode(blueLEDPin, OUTPUT);
+
+        }
+
+        void loop() {
+        // put your main code here, to run repeatedly:
+        redSensorValue = analogRead(redSensorPin);
+        greenSensorValue = analogRead(greenSensorPin);
+        blueSensorValue = analogRead(blueSensorPin);
+
+        Serial.print("Raw Sensor Values \t red: ");
+        Serial.print(redSensorValue);
+
+        Serial.print("Raw Sensor Values \t green: ");
+        Serial.print(greenSensorValue);
+
+        Serial.print("Raw Sensor Values \t blue: ");
+        Serial.println(blueSensorValue);
+
+        redValue = redSensorValue/4;
+        greenValue = greenSensorValue/4;
+        blueValue = blueSensorValue/4;
+
+        Serial.print("Mapped Sensor Values \t red: ");
+        Serial.print(redValue);
+
+        Serial.print("\t green: ");
+        Serial.print(greenValue);
+
+        Serial.print("\t blue: ");
+        Serial.println(blueValue);
+
+        switchState = digitalRead(2);
+
+        analogWrite(redLEDPin, LOW);
+
+        if(switchState == HIGH) {
+            analogWrite(redLEDPin, redValue);
+            analogWrite(greenLEDPin, greenValue);
+            analogWrite(blueLEDPin, blueValue);  
+            }
+
+        else {
+            delay(250);
+            analogWrite(redLEDPin, HIGH);
+
+            }
+
+        }
+    </pre></code>
+    
+</body>
+<footer>
+    © Dawnlight Dev, 2023
+</footer>
+</html>

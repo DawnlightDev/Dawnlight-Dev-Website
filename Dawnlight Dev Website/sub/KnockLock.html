@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href = "/styles.css" rel = "stylesheet">
+    <title>Knock Lock | Dawnlight Dev</title>
+</head>
+<body>
+    <div class="banner-container">
+        <div class="banner">
+          <h1 id = "header">Dawnlight Dev</h1>
+        </div>
+    </div>      
+    <nav id = "navbar">
+        <ul id = "navbarList">
+            <li>Home</li>
+            <li>About</li>
+            <li>Games</li>
+            <li><a href = "/arduino.html">Arduino</a></li>
+            <li>Contact</li>
+        </ul>
+    </nav>
+
+    <h1 id = "body">Knock Lock</h1>
+    <p id = "body">For this project, we create a lock that accepts up to three button presses as "knocks". which procedurally will gradually
+        unlock the lock and resets the lock to the locked position after unlocking.
+    </p>
+
+    <h3 id = "body">Parts Required For Assembly</h3>
+    <ul id = "body">
+        <li>Power Cables</li>
+        <li>3 220ohm resistor</li>
+        <li>1 10kilohm resistor</li>
+        <li>1 1megohm resistor</li>
+        <li>1 Switch</li>
+        <li>1 Green LED Light</li>
+        <li>1 Yellow LED Light</li>
+        <li>1 Red LED Light</li>
+        <li>1 100uf Capacitor</li>
+        <li>1 Servo Motor</li>
+        <li>11 Medium/Large Jumper Wire</li>
+        <li>5 Small Jumper Wires</li>
+    </ul>
+
+    <img src = "/Assets/IMG_1164.jpg" width = 500px>
+
+    <br>
+    
+    <iframe width="560" height="315" src="/Assets/IMG_1165.mov" title="YouTube video player" frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <br>
+
+    <code><pre>
+    #include <Servo.h>
+        Servo myServo;
+    
+        const int switchPin = 2;
+        const int yellowLED = 3;
+        const int greenLED = 4;
+        const int redLED = 5;
+    
+        int knockVal;
+        int switchVal;
+        boolean locked = false;
+        int numOfKnocks = 0;
+        int prevSwitchState = LOW;
+    
+        void setup() {
+        // put your setup code here, to run once:
+        myServo.attach(9);
+        pinMode(yellowLED, OUTPUT);
+        pinMode(redLED, OUTPUT);
+        pinMode(greenLED, OUTPUT);
+        pinMode(switchPin, OUTPUT);
+        Serial.begin(9600);
+        digitalWrite(greenLED, HIGH);
+        myServo.write(0);
+        delay(50);
+        Serial.println("The box is unlocked!");
+        }
+    
+        void loop() {
+        // put your main code here, to run repeatedly:
+        switchVal = digitalRead(switchPin);
+        if (locked == false) {
+    
+        if (switchVal == HIGH) {
+        locked = true;
+        digitalWrite(greenLED, LOW);
+        digitalWrite(redLED, LOW);
+        digitalWrite(yellowLED, LOW);
+        myServo.write(0);
+        Serial.println("The box is locked!");
+        numOfKnocks = 0;
+        }
+        }
+    
+        if (locked == true) {
+        //Serial.println(switchVal);
+        if (switchVal == HIGH && prevSwitchState == LOW) {
+        if (numOfKnocks <= 4) { numOfKnocks++; prevSwitchState=HIGH; myServo.write(numOfKnocks*60); delay(20); }
+            Serial.print(3 - numOfKnocks); Serial.println(" more knocks to go!"); if(numOfKnocks==1) {
+            digitalWrite(yellowLED, HIGH); } if(numOfKnocks==2) { digitalWrite(yellowLED, HIGH); digitalWrite(greenLED,
+            HIGH); } if(numOfKnocks==3) { digitalWrite(yellowLED, HIGH); digitalWrite(greenLED, HIGH); digitalWrite(redLED,
+            HIGH); delay(500); locked=false; delay(20); myServo.write(0); } if (numOfKnocks>= 4) {
+    
+            digitalWrite(greenLED, LOW);
+            digitalWrite(redLED, LOW);
+            digitalWrite(yellowLED, LOW);
+            delay(20);
+            numOfKnocks = 0;
+            locked = true;
+            }
+            }
+            else if (switchVal == LOW && prevSwitchState == HIGH) {
+            Serial.println("switching to low");
+            prevSwitchState = LOW;
+            }
+            }
+            }
+
+
+    </pre></code>
+    
+</body>
+<footer>
+    © Dawnlight Dev, 2023
+</footer>
+</html>

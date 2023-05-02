@@ -1,0 +1,179 @@
+body {
+  margin: 0;
+  font-family: calibri;
+  font-size: 1.5rem;
+  color:#402060;
+  background-color: #E6E6FA;
+  text-align: center;
+}
+
+footer {
+  text-align: left;
+  margin: 10px;
+}
+
+.bodyContainer {
+  margin: 10px;
+}
+
+.banner-container {
+    display: flex;
+    height: 25vh;
+    overflow: hidden;
+    margin: 0;
+  }
+  
+  .banner {
+    background-image: url(assets/space.png);
+    background-repeat: repeat;
+    height: 25vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+  
+  #header {
+    color: white;
+    font-size: 36px;
+    text-shadow: 1px 1px black;
+    font-family: "Old School Adventures", calibri;
+  }
+
+  nav {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 5vh;
+    background-color: #402060;
+    padding: 5px;
+  }
+  
+  #navbarList {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 25%;
+  }
+
+  #cont {
+    position: relative;
+    left: 17%;
+    max-width: 1000px;
+  }
+
+  #blog {
+    display: grid;
+    max-width: 300px;
+    margin: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-gap: 20px;
+  }
+  
+  .post-card {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  @media screen and (max-width: 768px) {
+    #blog {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+
+  iframe {
+    display: block;
+    margin: 0 auto;
+ }
+
+ img {
+    display: block;
+    margin: 0 auto;
+ }
+
+code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#body {
+  text-align: center;
+}
+
+.navLink a:link {
+  color: white;
+  text-decoration: none;
+}
+
+.navLink a:visited {
+  color: white;
+  text-decoration: none;
+}
+
+.navLink a:hover {
+  color: white;
+  text-decoration: none;
+}
+
+.navLink a:active {
+  color: white;
+  text-decoration: none;
+}
+
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  max-width: 300px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.dropbtn {
+  background-color: #402060;
+  color: white;
+  font-family: calibri;
+  font-size: 1.5rem;
+  border: none;
+  cursor: pointer;
+  margin-top: -50px;
+
+}
+
+.dropdown {
+  position: relative;
+}
+
+#container {
+  position: relative;
+  left: 10%;
+  text-align: center;
+  margin: 10px;
+  max-width: 75%;
+}
+  
+  
