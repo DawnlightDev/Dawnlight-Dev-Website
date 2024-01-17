@@ -1,4 +1,4 @@
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function () {
   function getPosts() {
     // fetch all the HTML files in the /blog directory
     fetch('/blog-posts')
@@ -20,7 +20,7 @@ $(document).ready(function() {
           var link = links[i].getAttribute('href');
           if (link.endsWith('.html')) {
             promises.push(
-              (function(link) {
+              (function (link) {
                 return fetch(link)
                   .then(response => response.text())
                   .then(postData => {
@@ -60,7 +60,7 @@ $(document).ready(function() {
         Promise.all(promises).then(() => {
           posts.sort((a, b) => b.postNumber - a.postNumber); // Sort in descending order
           var sortedPostsMarkup = posts.map(post => post.markup);
-          $('#devlogs-body').html(sortedPostsMarkup.join(''));
+          document.getElementById('devlogs-body').innerHTML = sortedPostsMarkup.join('');
         });
       });
   }
