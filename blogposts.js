@@ -1,7 +1,7 @@
-document.addEventListener('DOMContentLoaded', function () {
+$(document).ready(function() {
   function getPosts() {
-    // fetch all the HTML files in the /blog directory
-    fetch('/blog-posts')
+    // fetch all the HTML files in the /blog-posts/ directory
+    fetch('/blog-posts/')
       .then(response => response.text())
       .then(data => {
         // create an empty array to hold the post data
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
           var link = links[i].getAttribute('href');
           if (link.endsWith('.html')) {
             promises.push(
-              (function (link) {
+              (function(link) {
                 return fetch(link)
                   .then(response => response.text())
                   .then(postData => {
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
         Promise.all(promises).then(() => {
           posts.sort((a, b) => b.postNumber - a.postNumber); // Sort in descending order
           var sortedPostsMarkup = posts.map(post => post.markup);
-          document.getElementById('devlogs-body').innerHTML = sortedPostsMarkup.join('');
+          $('#devlogs-body').html(sortedPostsMarkup.join(''));
         });
       });
   }
