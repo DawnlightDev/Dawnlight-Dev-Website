@@ -1,4 +1,6 @@
-$(document).ready(function() {
+const fetch = require('fetch');
+
+$(document).ready(function () {
   function getPosts() {
     // fetch all the HTML files in the /blog-posts/ directory from the server
     fetch('blog-posts')
