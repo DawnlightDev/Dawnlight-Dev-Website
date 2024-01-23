@@ -1,8 +1,13 @@
 $(document).ready(function() {
   function getPosts() {
     // fetch all the HTML files in the /blog-posts/ directory from the server
-    fetch('/blog-posts')
-      .then(response => response.json())
+    fetch('blog-posts')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Network response was not ok: ${response.statusText}`);
+        }
+        return response.json();
+      })
       .then(data => {
         // create an empty array to hold the post data
         var posts = [];
@@ -47,6 +52,9 @@ $(document).ready(function() {
           var sortedPostsMarkup = posts.map(post => post.markup);
           $('#devlogs-body').html(sortedPostsMarkup.join(''));
         });
+      })
+      .catch(error => {
+        console.error('Error fetching blog posts:', error);
       });
   }
 
