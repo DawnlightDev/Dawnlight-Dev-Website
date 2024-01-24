@@ -1,7 +1,7 @@
 $(document).ready(function() {
   function getPosts() {
     // fetch all the HTML files in the /blog directory
-    fetch('/blog-posts/')
+    fetch(window.location.origin + '/blog-posts')
       .then(response => response.text())
       .then(data => {
         // create an empty array to hold the post data
