@@ -1,68 +1,77 @@
-$(document).ready(function() {
-  function getPosts() {
-    // fetch all the HTML files in the /blog directory
-    fetch(window.location.origin + '/blog-posts')
-      .then(response => response.text())
-      .then(data => {
-        // create an empty array to hold the post data
-        var posts = [];
+const cheerio = require('cheerio');
+const fs = require('fs');
+const path = require('path');
 
-        // parse the HTML data
-        var parser = new DOMParser();
-        var htmlDoc = parser.parseFromString(data, 'text/html');
+function readFiles(directoryPath) {
+  return new Promise((resolve, reject) => {
+    fs.access(directoryPath, fs.constants.R_OK | fs.constants.W_OK, (err) => {
+      if (err) {
+        console.error(`Directory '${directoryPath}' does not have read and write permissions.`);
+        console.error('Error:', err);
+      } else {
+        console.log(`Directory '${directoryPath}' has read and write permissions.`);
+      }
+    });
+    fs.readdir(directoryPath, (err, files) => {
+      if (err) {
+        reject('Error reading directory');
+      }
+      resolve(files);
+    });
+  });
+}
 
-        // get all the links to the HTML files
-        var links = htmlDoc.getElementsByTagName('a');
+async function getPosts() {
+  try {
+    const directoryPath = '/blog-posts'; // Replace with your actual path
+    const files = await readFiles(directoryPath);
+    const posts = [];
 
-        // loop through the links and fetch the content of each file
-        var promises = [];
-        for (var i = 0; i < links.length; i++) {
-          var link = links[i].getAttribute('href');
-          if (link.endsWith('.html')) {
-            promises.push(
-              (function(link) {
-                return fetch(link)
-                  .then(response => response.text())
-                  .then(postData => {
-                    var parser = new DOMParser();
-                    var postDoc = parser.parseFromString(postData, 'text/html');
-                    var title = postDoc.querySelector('h1#post-title').textContent;
-                    var subtitle = postDoc.querySelector('h2#post-title').textContent;
-                    var content = postDoc.querySelector('p').textContent;
-                    var thumbnailimg = postDoc.querySelector('img#postimg').src;
-                    var postNumber = parseInt(title.match(/\d+/)[0]); // Extract the post number
-                    console.log(title, content);
+    const promises = files.map(async (file) => {
+      if (file.endsWith('.html')) {
+        const filePath = path.join(directoryPath, file);
+        const fileContent = fs.readFileSync(filePath, 'utf-8');
 
-                    var url = link;
+        const $ = cheerio.load(fileContent);
+        const title = $('h1#post-title').text();
+        const subtitle = $('h2#post-title').text();
+        const content = $('p').text();
+        const thumbnailimg = $('img#postimg').attr('src');
+        const postNumber = parseInt(title.match(/\d+/)[0]);
 
-                    // limit the preview to the first 50 words
-                    var preview = content.split(' ').slice(0, 15).join(' ') + '...';
+        const url = `/blog-posts/${file}`;
 
-                    // create the HTML markup for each post card
-                    var postMarkup = '<div class="post-card">' + '<div id = "flex-child">' +
-                      '<div id = "cardimg" style="background-image: url(' + thumbnailimg + ');"></div>' +
-                      '<h3>' + title + '</h3>' +
-                      '<h4>' + subtitle + '</h4>' +
-                      '<p>' + preview + '</p>' +
-                      '<a href="' + url + '">Read more</a>' + '</div>' +
-                      '</div>';
+        // limit the preview to the first 50 words
+        const preview = content.split(' ').slice(0, 15).join(' ') + '...';
 
-                    // add the post data to the posts array
-                    posts.push({ postNumber: postNumber, markup: postMarkup });
-                  });
-              })(link)
-            );
-          }
-        }
+        // create the HTML markup for each post card
+        const postMarkup = `<div class="post-card"><div id="flex-child"><div id="cardimg" style="background-image: url(${thumbnailimg});"></div><h3>${title}</h3><h4>${subtitle}</h4><p>${preview}</p><a href="${url}">Read more</a></div></div>`;
 
-        // Wait for all promises to resolve, then sort and update the blog container
-        Promise.all(promises).then(() => {
-          posts.sort((a, b) => b.postNumber - a.postNumber); // Sort in descending order
-          var sortedPostsMarkup = posts.map(post => post.markup);
-          $('#devlogs-body').html(sortedPostsMarkup.join(''));
-        });
-      });
+        // add the post data to the posts array
+        posts.push({ postNumber, markup: postMarkup });
+      }
+    });
+
+    await Promise.all(promises);
+
+    // Sort in descending order based on postNumber
+    posts.sort((a, b) => b.postNumber - a.postNumber);
+
+    // Example: Print the sorted posts to the console
+    console.log(posts);
+
+    // If you want to write the sorted posts to a file, you can use fs.writeFileSync
+
   }
+  
+  catch (error) {
+    console.error('Error:', error);
+  }
+}
 
-  getPosts();
-});
+module.exports = {
+  readFiles,
+  getPosts,
+};
+
+
