@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 function readFiles(directoryPath) {
+  console.log('readFiles function called');
   return new Promise((resolve, reject) => {
     fs.access(directoryPath, fs.constants.R_OK | fs.constants.W_OK, (err) => {
       if (err) {

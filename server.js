@@ -5,8 +5,6 @@ const app = express();
 
 // Serve static files from the 'public' directory
 app.use(express.static(__dirname));
-
-app.use('/blog-posts', express.static(path.join(__dirname, 'blog-posts')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -15,15 +13,22 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-blogPosts.readFiles('/blog-posts').then(posts => {
+app.get('/sub', async (req, res) => {
+  
+  try {
+    const posts = await blogPosts.readFiles('/blog-posts');
     console.log(posts);
-    // Do something with the posts
-  })
-  .catch(error => {
+    const allPosts = blogPosts.getPosts();
+    console.log(allPosts);
+    res.sendFile(path.join(__dirname, '/sub/mahou-shoujo-monogatari-devlogs.html'));
+    console.log("Posts updated!");
+  }
+  
+  catch (error) {
     console.error('Error:', error);
-  });
-
-blogPosts.getPosts();
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 // Start the server
 const PORT = process.env.PORT || 3000;
