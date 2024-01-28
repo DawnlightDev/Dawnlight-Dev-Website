@@ -13,22 +13,17 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/sub', async (req, res) => {
-  
+app.get('/blog-posts', async (req, res) => {
   try {
-    const posts = await blogPosts.readFiles('/blog-posts');
-    console.log(posts);
-    const allPosts = blogPosts.getPosts();
-    console.log(allPosts);
-    res.sendFile(path.join(__dirname, '/sub/mahou-shoujo-monogatari-devlogs.html'));
-    console.log("Posts updated!");
-  }
-  
-  catch (error) {
+    const posts = await blogPosts.getPosts();
+    console.log(posts); // Wait for getPosts to complete before logging
+    res.json(posts);
+  } catch (error) {
     console.error('Error:', error);
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 // Start the server
 const PORT = process.env.PORT || 3000;
