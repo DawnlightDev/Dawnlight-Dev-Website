@@ -17,6 +17,7 @@ app.get('/blog-posts', async (req, res) => {
   try {
     const posts = await blogPosts.getPosts();
     console.log(posts); // Wait for getPosts to complete before logging
+    res.header('Content-Type', 'application/json');
     res.json(posts);
   } catch (error) {
     console.error('Error:', error);
