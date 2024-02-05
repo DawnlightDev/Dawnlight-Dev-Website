@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fetch = require('node-fetch');
 const blogPosts = require('./blogposts.js');
 const app = express();
 
@@ -13,43 +14,49 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/mahou-shoujo-monogatari-devlogs', async (req, res) => {
-  try {
-    // Fetch blog posts
-    const posts = await blogPosts.getPosts();
-
-    // Read the content of devlogs.html
-    const filePath = path.join(__dirname, 'mahou-shoujo-monogatari-devlogs.html');
-    let htmlContent = await fs.readFile(filePath, 'utf-8');
-
-    // Modify the HTML content based on the fetched blog posts
-    const postsHTML = posts.map(post => `
-      <div class="post">
-        <h2>${post.title}</h2>
-        <p>${post.content}</p>
-      </div>
-    `).join('');
-
-    // Replace a placeholder in devlogs.html with the generated post HTML
-    htmlContent = htmlContent.replace('<div id = "postcard">', postsHTML);
-
-    // Set the Content-Type header to indicate HTML
-    res.header('Content-Type', 'text/html');
-
-    // Respond with the modified HTML content
-    res.send(htmlContent);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
 app.get('/blog-posts', async (req, res) => {
   try {
     const posts = await blogPosts.getPosts();
     console.log(posts); // Wait for getPosts to complete before logging
-    res.header('Content-Type', 'application/json');
     res.json(posts);
+    async function fetchAndRenderPosts() {
+      try {
+        // Fetch blog posts from the server
+        const response = await fetch('/blog-posts');
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Parse the JSON response
+        const posts = await response.json();
+
+        // Log the received posts to the console for debugging
+        console.log('Received posts:', posts);
+
+        // Render the posts
+        renderPosts(posts);
+      } catch (error) {
+        console.error('Error fetching and rendering posts:', error);
+      }
+    }
+
+    function renderPosts(posts) {
+      const devlogsBody = document.getElementById('devlogs-body');
+
+      // Clear existing content of devlogs-body
+      devlogsBody.innerHTML = '';
+
+      // Append the fetched posts to devlogs-body
+      posts.forEach(post => {
+        const postElement = document.createElement('div');
+        postElement.innerHTML = post.markup;
+        devlogsBody.appendChild(postElement.firstChild); // Append the first child of postElement (the post markup)
+      });
+    }
+
+    // Fetch and render posts when the page loads
+    document.addEventListener('DOMContentLoaded', fetchAndRenderPosts);
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send('Internal Server Error');
