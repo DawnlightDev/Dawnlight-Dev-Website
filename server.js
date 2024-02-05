@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const blogPosts = require('./blogposts.js');
+const serverless = require('serverless-http');
 const app = express();
 
 // Serve static files from the 'public' directory
@@ -17,7 +18,7 @@ app.get('/blog-posts', async (req, res) => {
   try {
     const posts = await blogPosts.getPosts();
     console.log(posts); // Wait for getPosts to complete before logging
-    res.json(posts);
+    res.render('mahou-shoujo-monogatari-devlogs', { posts });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send('Internal Server Error');
@@ -26,7 +27,9 @@ app.get('/blog-posts', async (req, res) => {
 
 
 // Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => {
+//   console.log(`Server is running on http://localhost:${PORT}`);
+// });
+
+module.exports.handler = serverless(app);
