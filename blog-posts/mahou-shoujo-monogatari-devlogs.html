@@ -41,19 +41,27 @@
     <script src="/index.js"></script>
     <script>
         // Fetch posts and update the devlogs-body element
-            async function fetchAndRenderPosts() {
-                try {
-                    const response = await fetch('/blog-posts');
-                    const posts = await response.json();
+            // client-side.js
+                async function fetchAndRenderPosts() {
+                    try {
+                        // Fetch blog posts from the server
+                        const response = await fetch('/blog-posts');
 
-                    // Assuming you have a function to render posts in your desired format
-                    renderPosts(posts);
-                } catch (error) {
-                    console.error('Error fetching and rendering posts:', error);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+
+                        // Parse the JSON response
+                        const posts = await response.json();
+
+                        // Render the posts
+                        renderPosts(posts);
+                    } catch (error) {
+                        console.error('Error fetching and rendering posts:', error);
+                    }
                 }
-            }
 
-            function renderPosts(posts) {
+                function renderPosts(posts) {
                     const devlogsBody = document.getElementById('devlogs-body');
 
                     // Clear existing content of devlogs-body
@@ -67,8 +75,9 @@
                     });
                 }
 
-            // Fetch and render posts when the page loads
-            document.addEventListener('DOMContentLoaded', fetchAndRenderPosts)
+                // Fetch and render posts when the page loads
+                document.addEventListener('DOMContentLoaded', fetchAndRenderPosts);
+
     </script>
 </body>
 <footer>
