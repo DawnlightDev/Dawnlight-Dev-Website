@@ -40,43 +40,43 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="/index.js"></script>
     <script>
-        // Fetch posts and update the devlogs-body element
-            // client-side.js
-                async function fetchAndRenderPosts() {
-                    try {
-                        // Fetch blog posts from the server
-                        const response = await fetch('/blog-posts');
+        // client-side.js
+            async function fetchAndRenderPosts() {
+                try {
+                    // Fetch blog posts from the server
+                    const response = await fetch('/blog-posts');
 
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-
-                        // Parse the JSON response
-                        const posts = await response.json();
-
-                        // Render the posts
-                        renderPosts(posts);
-                    } catch (error) {
-                        console.error('Error fetching and rendering posts:', error);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
                     }
+
+                    // Parse the JSON response
+                    const posts = await response.json();
+
+                    // Render the posts
+                    renderPosts(posts);
+                } catch (error) {
+                    console.error('Error fetching and rendering posts:', error);
                 }
+            }
 
-                function renderPosts(posts) {
-                    const devlogsBody = document.getElementById('devlogs-body');
+            function renderPosts(posts) {
+                const devlogsBody = document.getElementById('devlogs-body');
 
-                    // Clear existing content of devlogs-body
-                    devlogsBody.innerHTML = '';
+                // Clear existing content of devlogs-body
+                devlogsBody.innerHTML = '';
 
-                    // Append the fetched posts to devlogs-body
-                    posts.forEach(post => {
-                        const postElement = document.createElement('div');
-                        postElement.innerHTML = post.markup;
-                        devlogsBody.appendChild(postElement.firstChild); // Append the first child of postElement (the post markup)
-                    });
-                }
+                // Append the fetched posts to devlogs-body
+                posts.forEach(post => {
+                    const postElement = document.createElement('div');
+                    postElement.innerHTML = post.markup;
+                    devlogsBody.appendChild(postElement.firstChild); // Append the first child of postElement (the post markup)
+                });
+            }
 
-                // Fetch and render posts when the page loads
-                document.addEventListener('DOMContentLoaded', fetchAndRenderPosts);
+            // Fetch and render posts when the page loads
+            document.addEventListener('DOMContentLoaded', fetchAndRenderPosts);
+
 
     </script>
 </body>
