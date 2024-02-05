@@ -1,7 +1,7 @@
 [build]
   command = "npm install"  # Adjust this to your build script
   functions = "functions"  # Folder where serverless functions are stored
-  publish = "public"       # Adjust this to your build output directory
+  publish = "dist"       # Adjust this to your build output directory
   memory = 10240
 
 
