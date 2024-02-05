@@ -14,5 +14,3 @@ If you happen to like the design of my website or like some of the functionality
 <li> HTML5 </li>
 <li> CSS3 </li>
 <li> jQuery </li>
-<li> NodeJS </li>
-<li> Express </li>

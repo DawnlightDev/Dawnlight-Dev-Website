@@ -8,10 +8,11 @@
     "fetch": "^1.1.0",
     "jsdom": "^23.2.0",
     "netlify": "^13.1.13",
+    "serverless": "^3.38.0",
     "serverless-http": "^3.2.0"
   },
   "scripts": {
-    "start": "node handler.js",
+    "start": "node server.js",
     "build": "npm run build"
   },
   "name": "dawnlight-dev-website",
