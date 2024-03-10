@@ -1,9 +1,0 @@
-[build]
-  functions = "functions"
-  command = "npm install" # Adjust this to your build script
-  publish = "" # Adjust this to your build output directory
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
