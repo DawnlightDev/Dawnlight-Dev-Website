@@ -1,7 +1,7 @@
 $(document).ready(function() {
     function getPosts() {
     // fetch all the HTML files in the /blog directory
-    fetch('https://dawnlight.dev/blog-posts/')
+    fetch('https://dawnlight.dev')
       .then(response => response.text())
       .then(data => {
         // create an empty array to hold the post data
