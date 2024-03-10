@@ -97,6 +97,10 @@ footer {
     gap: 15px;
     margin: 10px;
   }
+
+  #cardimg {
+    max-width: 200px;
+  }
   
 .post-card {
     background-color: #f9f9f9;
