@@ -1,9 +1,10 @@
 $(document).ready(function() {
     function getPosts() {
     // fetch all the HTML files in the /blog directory
-    fetch('https://dawnlight.dev/blog-posts')
+      fetch('https://dawnlight.dev/blog-posts/')
       .then(response => response.text())
       .then(data => {
+        console.log("Successfully found directory!");
         // create an empty array to hold the post data
         var posts = [];
 
