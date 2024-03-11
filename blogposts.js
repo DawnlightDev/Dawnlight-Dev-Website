@@ -1,7 +1,7 @@
 $(document).ready(function() {
     function getPosts() {
     // fetch all the HTML files in the /blog directory
-      fetch('https://taupe-kitsune-d0a191.netlify.app/blog-posts/')
+      fetch('https://dawnlight.dev/blog-posts/')
       .then(response => response.text())
       .then(data => {
         console.log("Successfully found directory!");
