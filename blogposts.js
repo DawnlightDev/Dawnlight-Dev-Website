@@ -1,63 +1,67 @@
-$(document).ready(function() {
-    function getPosts() {
-    // fetch all the HTML files in the /blog directory
-      fetch('/blog-posts/')
-      .then(response => response.text())
-      .then(data => {
-        console.log("Successfully found directory!");
-        // create an empty array to hold the post data
-        var posts = [];
+const fs = require('fs');
+const path = require('path');
 
-        // parse the HTML data
-        var parser = new DOMParser();
-        var htmlDoc = parser.parseFromString(data, 'text/html');
+function getPosts() {
+  const blogDirectory = './blog-posts/';
 
-        // get all the links to the HTML files
-        var links = htmlDoc.getElementsByTagName('a');
+  // Read the contents of the blog directory
+  fs.readdir(blogDirectory, (err, files) => {
+    if (err) {
+      console.error('Error reading directory:', err);
+      return;
+    }
 
-        // loop through the links and fetch the content of each file
-        for (var i = 0; i < links.length; i++) {
-          var link = links[i].getAttribute('href');
-          if (link.endsWith('.html')) {
-            (function(link) {
-              fetch(link)
-                .then(response => response.text())
-                .then(postData => {
-                  var parser = new DOMParser();
-                  var postDoc = parser.parseFromString(postData, 'text/html');
-                  var title = postDoc.querySelector('h1#post-title').textContent;
-                  var subtitle = postDoc.querySelector('h2#post-title').textContent;
-                  var content = postDoc.querySelector('p').textContent;
-                  var thumbnailimg = postDoc.querySelector("img#postimg").src;
-                  console.log(title, content);
+    // Create an empty array to hold the post data
+    var posts = [];
 
-                  var url = link;
-
-                  // limit the preview to the first 50 words
-                  var preview = content.split(' ').slice(0, 15).join(' ') + '...';
-
-                  // create the HTML markup for each post card
-                    var postMarkup = '<div class="post-card">' +
-                      '<img id = "cardimg", src =' + thumbnailimg + '>' +
-                      '<h3>' + title + '</h3>' + 
-                      '<h4>' + subtitle + '</h4>' +
-                    '<p>' + preview + '</p>' +
-                    '<a href="' + url + '">Read more</a>' +
-                    '</div>';
-
-                  // add the post data to the posts array
-                  if (posts.postMarkup != -1) {
-                    posts.unshift(postMarkup);
-                    // Append the posts to the 'home-body' element
-                    $('#devlogs-body').html(posts.join(''));
-                  }
-                  console.log(url);
-                });
-            })(link);
+    // Loop through each file in the directory
+    files.forEach(file => {
+      if (file.endsWith('.html')) {
+        const filePath = path.join(blogDirectory, file);
+        
+        // Read the content of each HTML file
+        fs.readFile(filePath, 'utf8', (err, data) => {
+          if (err) {
+            console.error('Error reading file:', err);
+            return;
           }
-        }
-      });
-  }
 
-  getPosts();
-});
+          // Parse the HTML data
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(data, 'text/html');
+
+          // Extract post information
+          const title = htmlDoc.querySelector('h1#post-title').textContent;
+          const subtitle = htmlDoc.querySelector('h2#post-title').textContent;
+          const content = htmlDoc.querySelector('p').textContent;
+          const thumbnailimg = htmlDoc.querySelector("img#postimg").src;
+
+          // Limit the preview to the first 50 words
+          const preview = content.split(' ').slice(0, 15).join(' ') + '...';
+
+          const url = filePath; // Use file path as URL
+
+          // Create HTML markup for each post card
+          const postMarkup = '<div class="post-card">' +
+            '<img id="cardimg" src="' + thumbnailimg + '">' +
+            '<h3>' + title + '</h3>' +
+            '<h4>' + subtitle + '</h4>' +
+            '<p>' + preview + '</p>' +
+            '<a href="' + url + '">Read more</a>' +
+            '</div>';
+
+          // Add the post data to the posts array
+          posts.push(postMarkup);
+
+          // If all files have been processed, append posts to the element
+          if (posts.length === files.length) {
+            // Append the posts to the 'home-body' element
+            $('#devlogs-body').html(posts.join(''));
+          }
+        });
+      }
+    });
+  });
+}
+
+getPosts();
