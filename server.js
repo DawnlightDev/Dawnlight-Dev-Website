@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const cheerio = require('cheerio');
 const cors = require('cors');
+//const serverless = require('serverless-http');
 
 const app = express();
 
@@ -18,16 +19,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Serve devlogs.html using Express
-app.get('/sub/mahou-shoujo-monogatari-devlogs.html', (req, res) => {
-    fs.readFile(__dirname + '/sub/mahou-shoujo-monogatari-devlogs.html', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Error loading devlogs.html');
-        }
-        res.send(data);
-    });
-});
 
 // Serve blog posts from the server
 app.get('/blog-posts', (req, res) => {
@@ -73,3 +64,5 @@ function parsePost(data, url) {
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');
 });
+
+//module.exports.handler = serverless(app);
