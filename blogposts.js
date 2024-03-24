@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    fetch('/blog-posts')
+    fetch('https://dawnlight.dev/blog-posts')
         .then(response => response.json())
         .then(posts => {
             const devlogsBody = $('#devlogs-body');
