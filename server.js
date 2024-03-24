@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const cheerio = require('cheerio');
 const cors = require('cors');
-//const serverless = require('serverless-http');
+const serverless = require('serverless-http');
 
 const app = express();
 
@@ -61,8 +61,7 @@ function parsePost(data, url) {
     return { title, subtitle, content, preview, thumbnailImg, url };
 }
 
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
-});
-
-//module.exports.handler = serverless(app);
+//app.listen(3000, () => {
+ //   console.log('Server is running on http://localhost:3000');
+//});
+module.exports.handler = serverless(app);
