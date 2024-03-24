@@ -1,8 +1,9 @@
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
-const fetch = require('node-fetch');
-const serverless = require('serverless-http');
-const blogPosts = require('./blogposts.js');
+const cheerio = require('cheerio');
+const cors = require('cors');
+
 const app = express();
 
 // Serve static files from the 'public' directory
@@ -10,65 +11,65 @@ app.use(express.static(__dirname));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+app.use(cors());
+
 // Define a route for the root path
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/blog-posts', async (req, res) => {
-  try {
-    const posts = await blogPosts.getPosts();
-    console.log(posts); // Wait for getPosts to complete before logging
-    res.json(posts);
-    async function fetchAndRenderPosts() {
-      try {
-        // Fetch blog posts from the server
-        const response = await fetch('/blog-posts');
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+// Serve devlogs.html using Express
+app.get('/sub/mahou-shoujo-monogatari-devlogs.html', (req, res) => {
+    fs.readFile(__dirname + '/sub/mahou-shoujo-monogatari-devlogs.html', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Error loading devlogs.html');
         }
-
-        // Parse the JSON response
-        const posts = await response.json();
-
-        // Log the received posts to the console for debugging
-        console.log('Received posts:', posts);
-
-        // Render the posts
-        renderPosts(posts);
-      } catch (error) {
-        console.error('Error fetching and rendering posts:', error);
-      }
-    }
-
-    function renderPosts(posts) {
-      const devlogsBody = document.getElementById('devlogs-body');
-
-      // Clear existing content of devlogs-body
-      devlogsBody.innerHTML = '';
-
-      // Append the fetched posts to devlogs-body
-      posts.forEach(post => {
-        const postElement = document.createElement('div');
-        postElement.innerHTML = post.markup;
-        devlogsBody.appendChild(postElement.firstChild); // Append the first child of postElement (the post markup)
-      });
-    }
-
-    // Fetch and render posts when the page loads
-    document.addEventListener('DOMContentLoaded', fetchAndRenderPosts);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('Internal Server Error');
-  }
+        res.send(data);
+    });
 });
 
+// Serve blog posts from the server
+app.get('/blog-posts', (req, res) => {
+    const postsDirectory = path.join(__dirname, 'blog-posts');
+    fs.readdir(postsDirectory, (err, files) => {
+        if (err) {
+            console.error('Error reading directory:', err);
+            return res.status(500).send('Error reading directory');
+        }
+        
+        // Read each HTML file and send the contents
+        const postsData = [];
+        files.forEach(file => {
+            if (file.endsWith('.html')) {
+                const filePath = path.join(postsDirectory, file);
+                fs.readFile(filePath, 'utf8', (err, data) => {
+                    if (err) {
+                        console.error('Error reading file:', err);
+                        return;
+                    }
+                    const url = '/blog-posts/' + file; // Construct URL for the post
+                    postsData.push(parsePost(data, url)); // Pass the URL to parsePost
+                    if (postsData.length === files.length) {
+                        res.json(postsData);
+                    }
+                });
+            }
+        });
+    });
+});
 
-// Start the server
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//   console.log(`Server is running on http://localhost:${PORT}`);
-// });
+// Parse post data from HTML content
+function parsePost(data, url) {
+    const $ = cheerio.load(data);
+    const title = $('h1#post-title').text();
+    const subtitle = $('h2#post-subtitle').text();
+    const content = $('div#video').html(); // Get HTML content
+  const thumbnailImg = $('img#post-thumbnail').attr('src');
+  const preview = $('p#preview').text().split(' ').slice(0, 15).join(' ') + '...';
+    return { title, subtitle, content, preview, thumbnailImg, url };
+}
 
-module.exports.handler = serverless(app);
+app.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
+});
