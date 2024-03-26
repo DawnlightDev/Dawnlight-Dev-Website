@@ -1,78 +1,111 @@
 const express = require('express');
 const fs = require('fs');
+const jsdom = require('jsdom');
 const path = require('path');
-const cheerio = require('cheerio');
-const cors = require('cors');
-const serverless = require('serverless-http');
+const { JSDOM } = jsdom;
 
 const app = express();
+
+const port = 3000;
 
 // Serve static files from the 'public' directory
 app.use(express.static(__dirname));
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-app.use(cors());
+app.set('views', path.join(__dirname, 'sub'));
 
 // Define a route for the root path
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+    // Render your default HTML page (e.g., index.html) statically
+    res.render(path.join(__dirname, 'index'));
 });
 
-// Serve devlogs.html using Express
-app.get('/sub/mahou-shoujo-monogatari-devlogs.html', (req, res) => {
-    fs.readFile(__dirname + '/sub/mahou-shoujo-monogatari-devlogs.html', 'utf8', (err, data) => {
+// Define a route for the root path
+app.get('/about', (req, res) => {
+    // Render your default HTML page (e.g., index.html) statically
+    res.render(path.join(__dirname, 'about'));
+});
+
+// Define a route for the root path
+app.get('/contact', (req, res) => {
+    // Render your default HTML page (e.g., index.html) statically
+    res.render(path.join(__dirname, 'contact'));
+});
+
+// Define a route for the root path
+app.get('/games', (req, res) => {
+    // Render your default HTML page (e.g., index.html) statically
+    res.render(path.join(__dirname, 'games'));
+});
+
+app.get('/sub/mahou-shoujo-monogatari-devlogs', (req, res) => {
+    // Read the directory /blog-posts
+    fs.readdir(path.join(__dirname, 'blog-posts'), (err, files) => {
         if (err) {
             console.error(err);
-            return res.status(500).send('Error loading devlogs.html');
-        }
-        res.send(data);
-    });
-});
-
-// Serve blog posts from the server
-app.get('/blog-posts', (req, res) => {
-    const postsDirectory = path.join(__dirname, 'blog-posts');
-    fs.readdir(postsDirectory, (err, files) => {
-        if (err) {
-            console.error('Error reading directory:', err);
             return res.status(500).send('Error reading directory');
         }
-        
-        // Read each HTML file and send the contents
-        const postsData = [];
-        files.forEach(file => {
-            if (file.endsWith('.html')) {
-                const filePath = path.join(postsDirectory, file);
-                fs.readFile(filePath, 'utf8', (err, data) => {
+
+        // Process each HTML file in parallel
+        Promise.all(files.map(file => {
+            return new Promise((resolve, reject) => {
+                fs.readFile(path.join(__dirname, 'blog-posts', file), 'utf8', (err, data) => {
                     if (err) {
-                        console.error('Error reading file:', err);
-                        return;
+                        console.error(err);
+                        return reject('Error reading file');
                     }
-                    const url = '/blog-posts/' + file; // Construct URL for the post
-                    postsData.push(parsePost(data, url)); // Pass the URL to parsePost
-                    if (postsData.length === files.length) {
-                        res.json(postsData);
-                    }
+
+                    const dom = new JSDOM(data);
+                    const title = dom.window.document.querySelector('h1#post-title').textContent;
+                    const subtitle = dom.window.document.querySelector('h2#post-title').textContent;
+                    const content = dom.window.document.querySelector('p').textContent;
+                    const thumbnailimg = dom.window.document.querySelector("img#postimg").src;
+                    const url = `/blog-posts/${file}`;
+
+                    // Limit the preview to the first 50 words
+                    const preview = content.split(' ').slice(0, 15).join(' ') + '...';
+
+                    // Create HTML markup for the post card
+                    const postMarkup = `<div class="post-card">
+                                            <img id="cardimg" src="${thumbnailimg}">
+                                            <h3>${title}</h3>
+                                            <h4>${subtitle}</h4>
+                                            <p>${preview}</p>
+                                            <a href="${url}">Read more</a>
+                                        </div>`;
+                    resolve(postMarkup);
                 });
-            }
+            });
+        })).then(posts => {
+            // Render the page with all blog posts
+            const responseData = posts.join('');
+            res.render('mahou-shoujo-monogatari-devlogs', { blogPosts: responseData });
+        }).catch(error => {
+            console.error(error);
+            res.status(500).send('Error processing files');
         });
     });
 });
 
-// Parse post data from HTML content
-function parsePost(data, url) {
-    const $ = cheerio.load(data);
-    const title = $('h1#post-title').text();
-    const subtitle = $('h2#post-subtitle').text();
-    const content = $('div#video').html(); // Get HTML content
-  const thumbnailImg = $('img#post-thumbnail').attr('src');
-  const preview = $('p#preview').text().split(' ').slice(0, 15).join(' ') + '...';
-    return { title, subtitle, content, preview, thumbnailImg, url };
-}
 
-// app.listen(3000, () => {
-//     console.log('Server is running on http://localhost:3000');
+// Define a route for blog posts
+app.get('/blog-posts/:postName', (req, res) => {
+    const postName = req.params.postName;
+    const postFilePath = path.join(__dirname, 'blog-posts', postName + '.ejs');
+
+    // Check if the requested EJS file exists
+    fs.access(postFilePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            // If the file doesn't exist, return a 404 Not Found response
+            res.status(404).send('Post not found');
+        } else {
+            // If the file exists, render it dynamically
+            res.render(postName);
+        }
+    });
+});
+
+// app.listen(port, () => {
+//     console.log(`Server is listening at http://localhost:${port}`);
 // });
 
 module.exports.handler = serverless(app);

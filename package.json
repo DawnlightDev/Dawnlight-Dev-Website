@@ -1,19 +1,17 @@
 {
-  "name": "dawnlight-dev-website-main",
+  "name": "dawnlight-dev",
   "version": "1.0.0",
-  "description": "The repository for my personal blog website, currently hosted on Netlify! This site is programmed using HTML5, CSS3 and JavaScript with the jQuery library for added functionality. This is my personal blog where I will be uploading blog posts relating to projects I'm currently developing and working on, such as my 2D indie JRPG game, <i>Mahou Shoujo Monogatari</i>",
-  "main": "index.js",
+  "description": "blogpost",
+  "main": "blogposts.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "destiny-hanscom",
+  "license": "MIT",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12",
-    "cors": "^2.8.5",
-    "express": "^4.18.3",
-    "netlify": "^13.1.14",
-    "node": "^21.7.1"
+    "ejs": "^3.1.9",
+    "express": "^4.19.1",
+    "fs": "^0.0.1-security",
+    "jsdom": "^24.0.0"
   }
 }

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="styles.css" rel="stylesheet">
+    <link href="/Assets/icon.png" rel="icon">
+    <title>Games | Dawnlight Dev</title>
+</head>
+
+<body>
+    <div class="banner-container">
+        <div class="banner">
+            <h1 id="header">Dawnlight Dev</h1>
+        </div>
+    </div>
+    <button class="mobile-nav-toggle" aria-controls="primary-navigation" aria-expanded="false"> <span
+            class="sr-only"></span> </button>
+    <nav id="navbar">
+        <ul id="navbarList" data-visible="false" class="primary-navigation flex">
+            <li class="navLink active"><a href="/index">Home</a></li>
+            <li class="navLink"><a href="/about">About</a></li>
+            <li class="navLink"><a href="/games">Games</a></li>
+            <div class="dropdown">
+                <button class="dropbtn">Devlogs
+                    <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="/sub/mahou-shoujo-monogatari-devlogs" class="dropdown-link">Mahou Shoujo Monogatari</a>
+                </div>
+            </div>
+            <li class="navLink"><a href="/contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <br>
+    <h1>Games</h1>
+    <div class = "gamesGrid">
+        <div class = "gridItem item1"><img src="/Assets/icon.png" class = "responsive" width=200px style="border-radius: 5%;">
+            <i>Mahou Shoujo Monogatari</i>
+            <br>
+            <a href = "/blog-posts/mahou-shoujo-monogatari-devlogs.html">Devlogs</a>
+            <br>
+            <a href = "#">Official Website</a>
+        </div>
+        <!--<div class = "gridItem item2">2</div> -->
+    </div>
+
+</body>
+<footer>
+    © Dawnlight Dev, 2023
+</footer>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="/index.js"></script>
+
+</html>
