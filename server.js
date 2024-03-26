@@ -2,7 +2,6 @@ const express = require('express');
 const fs = require('fs');
 const jsdom = require('jsdom');
 const path = require('path');
-const cors = require('cors');
 const { JSDOM } = jsdom;
 
 const app = express();
@@ -13,7 +12,6 @@ const port = 3000;
 
 // Serve static files from the 'public' directory
 app.use(express.static(__dirname));
-app.use(cors);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'sub'));
 
