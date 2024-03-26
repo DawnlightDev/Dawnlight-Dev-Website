@@ -4,7 +4,7 @@
   "description": "blogpost",
   "main": "blogposts.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "blogposts.js"
   },
   "author": "destiny-hanscom",
