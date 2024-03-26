@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const jsdom = require('jsdom');
 const path = require('path');
+const serverless = require('serverless-http');
 const { JSDOM } = jsdom;
 
 const app = express();
