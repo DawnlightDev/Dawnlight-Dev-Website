@@ -7,6 +7,8 @@ const { JSDOM } = jsdom;
 
 const app = express();
 
+
+
 const port = 3000;
 
 // Serve static files from the 'public' directory
@@ -14,6 +16,18 @@ app.use(express.static(__dirname));
 app.use(cors());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'sub'));
+
+// Middleware function to add CORS headers
+const addCorsHeaders = (req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    next();
+};
+
+// Apply the middleware to all routes
+app.use(addCorsHeaders);
+
 
 // Define a route for the root path
 app.get('/', (req, res) => {
