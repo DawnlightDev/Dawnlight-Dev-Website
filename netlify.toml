@@ -1,3 +1,3 @@
 [build]
 command = "npm run" # Command to build your project
-publish = "public"        # Directory to publish (make sure your Express app builds to this directory)
+publish = ""        # Directory to publish (make sure your Express app builds to this directory)
