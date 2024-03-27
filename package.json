@@ -2,7 +2,7 @@
   "name": "dawnlight-dev",
   "version": "1.0.0",
   "description": "blogpost",
-  "main": "blogposts.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "server.js"
