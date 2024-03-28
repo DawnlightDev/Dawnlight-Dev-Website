@@ -33,7 +33,7 @@ footer {
   }
   
   .banner {
-    background-image: url(assets/space.png);
+    background-image: url(Assets/Space.png);
     background-repeat: repeat;
     height: 25vh;
     display: flex;
