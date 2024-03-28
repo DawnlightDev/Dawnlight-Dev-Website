@@ -2,12 +2,10 @@ const express = require('express');
 const fs = require('fs');
 const jsdom = require('jsdom');
 const path = require('path');
-const serverless = require('serverless-http');
+//const serverless = require('serverless-http');
 const { JSDOM } = jsdom;
 
 const app = express();
-
-
 
 const port = 3000;
 
@@ -119,8 +117,8 @@ app.get('/blog-posts/:postName', (req, res) => {
     });
 });
 
-// app.listen(port, () => {
-//     console.log(`Server is listening at http://localhost:${port}`);
-// });
+app.listen(port, () => {
+    console.log(`Server is listening at http://localhost:${port}`);
+});
 
-module.exports.handler = serverless(app);
+//module.exports.handler = serverless(app);
