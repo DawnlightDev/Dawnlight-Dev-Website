@@ -32,6 +32,10 @@ app.get('/', (req, res) => {
     res.render(path.join(__dirname, 'index'));
 });
 
+app.get('/index', (req, res) => {
+    res.render(path.join(__dirname, 'index'));
+});
+
 // Define a route for the root path
 app.get('/about', (req, res) => {
     // Render your default HTML page (e.g., index.html) statically
