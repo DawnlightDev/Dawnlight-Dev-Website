@@ -17,10 +17,6 @@ footer {
   margin: 10px;
 }
 
-#about {
-  margin: 0 250px 25px 250px;
-}
-
 .bodyContainer {
   margin: 10px;
 }
@@ -74,11 +70,12 @@ footer {
     gap: 25%;
   }
 
-  #cont {
-    position: relative;
-    left: 17%;
-    max-width: 1000px;
-  }
+#cont, #about {
+    max-width: 700px;
+    margin: 0 auto; /* This will center the container horizontally */
+    text-align: center; /* This will center the text inside the container */
+}
+
 
   #blog {
     display: grid;
