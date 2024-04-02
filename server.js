@@ -2,7 +2,6 @@ const express = require('express');
 const fs = require('fs');
 const jsdom = require('jsdom');
 const path = require('path');
-//const serverless = require('serverless-http');
 const { JSDOM } = jsdom;
 
 const app = express();
@@ -14,16 +13,10 @@ app.use(express.static(__dirname));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'sub'));
 
-// Middleware function to add CORS headers
-const addCorsHeaders = (req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    next();
-};
-
-// Apply the middleware to all routes
-app.use(addCorsHeaders);
+// Serve static files from the 'public' directory, excluding .ejs files
+app.use(express.static(__dirname, {
+    extensions: ['html', 'htm'] // Add more extensions if necessary
+}));
 
 
 // Define a route for the root path
@@ -62,7 +55,7 @@ app.get('/sub/mahou-shoujo-monogatari-devlogs', (req, res) => {
             return res.status(500).send('Error reading directory');
         }
 
-        // Process each HTML file in parallel
+        // Process each HTML file
         Promise.all(files.map(file => {
             return new Promise((resolve, reject) => {
                 fs.readFile(path.join(__dirname, 'blog-posts', file), 'utf8', (err, data) => {
@@ -76,7 +69,11 @@ app.get('/sub/mahou-shoujo-monogatari-devlogs', (req, res) => {
                     const subtitle = dom.window.document.querySelector('h2#post-title').textContent;
                     const content = dom.window.document.querySelector('p').textContent;
                     const thumbnailimg = dom.window.document.querySelector("img#postimg").src;
-                    const url = `/blog-posts/${file}`;
+                    const url = `/blog-posts/${file.replace('.ejs', '')}`;
+
+                    // Extract the numeric part from the title
+                    const numericPart = title.match(/\d+/);
+                    const postNumber = numericPart ? parseInt(numericPart[0]) : 0;
 
                     // Limit the preview to the first 50 words
                     const preview = content.split(' ').slice(0, 15).join(' ') + '...';
@@ -89,12 +86,15 @@ app.get('/sub/mahou-shoujo-monogatari-devlogs', (req, res) => {
                                             <p>${preview}</p>
                                             <a href="${url}">Read more</a>
                                         </div>`;
-                    resolve(postMarkup);
+                    resolve({ postMarkup, postNumber });
                 });
             });
         })).then(posts => {
+            // Sort the posts by postNumber in descending order
+            posts.sort((a, b) => b.postNumber - a.postNumber);
+
             // Render the page with all blog posts
-            const responseData = posts.join('');
+            const responseData = posts.map(post => post.postMarkup).join('');
             res.render('mahou-shoujo-monogatari-devlogs', { blogPosts: responseData });
         }).catch(error => {
             console.error(error);
@@ -102,6 +102,7 @@ app.get('/sub/mahou-shoujo-monogatari-devlogs', (req, res) => {
         });
     });
 });
+
 
 
 // Define a route for blog posts
@@ -116,10 +117,13 @@ app.get('/blog-posts/:postName', (req, res) => {
             res.status(404).send('Post not found');
         } else {
             // If the file exists, render it dynamically
-            res.render(postName);
+            res.render(postFilePath); // Render the template using the full path
         }
     });
 });
+
+
+
 
 app.listen(port, () => {
     console.log(`Server is listening at http://localhost:${port}`);
