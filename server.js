@@ -47,7 +47,7 @@ app.get('/games', (req, res) => {
     res.render(path.join(__dirname, 'games'));
 });
 
-app.get('/sub/mahou-shoujo-monogatari-devlogs', (req, res) => {
+app.get('/sub/magical-girl-saga-devlogs', (req, res) => {
     // Read the directory /blog-posts
     fs.readdir(path.join(__dirname, 'blog-posts'), (err, files) => {
         if (err) {
@@ -95,7 +95,7 @@ app.get('/sub/mahou-shoujo-monogatari-devlogs', (req, res) => {
 
             // Render the page with all blog posts
             const responseData = posts.map(post => post.postMarkup).join('');
-            res.render('mahou-shoujo-monogatari-devlogs', { blogPosts: responseData });
+            res.render('magical-girl-saga-devlogs', { blogPosts: responseData });
         }).catch(error => {
             console.error(error);
             res.status(500).send('Error processing files');
