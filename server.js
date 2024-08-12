@@ -9,14 +9,20 @@ const port = 3000;
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'sub'));
+
+// Configure Express to look for EJS templates in multiple directories
+app.set('views', [
+    __dirname,                 // Root directory
+    path.join(__dirname, 'sub'),   // 'sub' directory
+    path.join(__dirname, 'blog-posts') // 'blog-posts' directory
+]);
 
 // Serve static files from the root directory
 app.use(express.static(__dirname));
 
 // Define a route for the root path
 app.get('/', (req, res) => {
-    // Render the index.ejs template
+    // Render the index.ejs template from the root directory
     res.render('index');
 });
 
@@ -98,7 +104,7 @@ app.get('/blog-posts/:postName', (req, res) => {
     const postName = req.params.postName;
 
     // Render the EJS template for the specific blog post
-    res.render(path.join('blog-posts', postName)); // The 'blog-posts' folder should be in the 'views' directory
+    res.render(postName); // This assumes the file is in 'blog-posts' folder
 });
 
 app.listen(port, () => {
