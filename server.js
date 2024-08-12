@@ -5,48 +5,38 @@ const path = require('path');
 const { JSDOM } = jsdom;
 
 const app = express();
-
 const port = 3000;
 
-// Serve static files from the 'public' directory
-app.use(express.static(__dirname));
+// Set the view engine to EJS
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'sub'));
 
-// Serve static files from the 'public' directory, excluding .ejs files
-app.use(express.static(__dirname, {
-    extensions: ['html', 'htm'] // Add more extensions if necessary
-}));
-
+// Serve static files from the root directory
+app.use(express.static(__dirname));
 
 // Define a route for the root path
 app.get('/', (req, res) => {
-    // Render your default HTML page (e.g., index.html) statically
-    res.render(path.join(__dirname, 'index'));
+    // Render the index.ejs template
+    res.render('index');
 });
 
 app.get('/index', (req, res) => {
-    res.render(path.join(__dirname, 'index'));
+    res.render('index');
 });
 
-// Define a route for the root path
 app.get('/about', (req, res) => {
-    // Render your default HTML page (e.g., index.html) statically
-    res.render(path.join(__dirname, 'about'));
+    res.render('about');
 });
 
-// Define a route for the root path
 app.get('/contact', (req, res) => {
-    // Render your default HTML page (e.g., index.html) statically
-    res.render(path.join(__dirname, 'contact'));
+    res.render('contact');
 });
 
-// Define a route for the root path
 app.get('/games', (req, res) => {
-    // Render your default HTML page (e.g., index.html) statically
-    res.render(path.join(__dirname, 'games'));
+    res.render('games');
 });
 
+// Define a route to handle the blog posts
 app.get('/sub/magical-girl-saga-devlogs', (req, res) => {
     // Read the directory /blog-posts
     fs.readdir(path.join(__dirname, 'blog-posts'), (err, files) => {
@@ -103,30 +93,14 @@ app.get('/sub/magical-girl-saga-devlogs', (req, res) => {
     });
 });
 
-
-
-// Define a route for blog posts
+// Define a route for individual blog posts
 app.get('/blog-posts/:postName', (req, res) => {
     const postName = req.params.postName;
-    const postFilePath = path.join(__dirname, 'blog-posts', postName + '.ejs');
 
-    // Check if the requested EJS file exists
-    fs.access(postFilePath, fs.constants.F_OK, (err) => {
-        if (err) {
-            // If the file doesn't exist, return a 404 Not Found response
-            res.status(404).send('Post not found');
-        } else {
-            // If the file exists, render it dynamically
-            res.render(postFilePath); // Render the template using the full path
-        }
-    });
+    // Render the EJS template for the specific blog post
+    res.render(path.join('blog-posts', postName)); // The 'blog-posts' folder should be in the 'views' directory
 });
-
-
-
 
 app.listen(port, () => {
     console.log(`Server is listening at http://localhost:${port}`);
 });
-
-//module.exports.handler = serverless(app);
