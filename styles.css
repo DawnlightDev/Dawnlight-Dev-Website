@@ -17,10 +17,6 @@ footer {
   margin: 10px;
 }
 
-#about {
-  margin: 0 250px 25px 250px;
-}
-
 .bodyContainer {
   margin: 10px;
 }
@@ -33,7 +29,7 @@ footer {
   }
   
   .banner {
-    background-image: url(assets/space.png);
+    background-image: url(Assets/Space.png);
     background-repeat: repeat;
     height: 25vh;
     display: flex;
@@ -74,11 +70,12 @@ footer {
     gap: 25%;
   }
 
-  #cont {
-    position: relative;
-    left: 17%;
-    max-width: 1000px;
-  }
+#cont, #about {
+    max-width: 700px;
+    margin: 0 auto; /* This will center the container horizontally */
+    text-align: center; /* This will center the text inside the container */
+}
+
 
   #blog {
     display: grid;
@@ -96,6 +93,10 @@ footer {
     flex-wrap: wrap;
     gap: 15px;
     margin: 10px;
+  }
+
+  #cardimg {
+    max-width: 200px;
   }
   
 .post-card {
@@ -150,7 +151,7 @@ footer {
     gap: 5%;
   }
 
-  #cont {
+  #cont, #about {
     left: 0;
     margin: 10px;
   }

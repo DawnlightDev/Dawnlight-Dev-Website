@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/styles.css" rel="stylesheet">
+    <link href="/Assets/icon.png" rel="icon">
+    <title>Magical Girl Saga Dev Log #0 | Dawnlight Dev</title>
+</head>
+
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="/index.js"></script>
+    <div>
+        <div class="banner-container">
+            <div class="banner">
+                <h1 id="header">Dawnlight Dev</h1>
+            </div>
+        </div>
+        <button class="mobile-nav-toggle" aria-controls="primary-navigation" aria-expanded="false"> <span
+                class="sr-only"></span> </button>
+        <nav id="navbar">
+            <ul id="navbarList" data-visible="false" class="primary-navigation flex">
+                <li class="navLink active"><a href="/index">Home</a></li>
+                <li class="navLink"><a href="/about">About</a></li>
+                <li class="navLink"><a href="/games">Games</a></li>
+                <div class="dropdown">
+                    <button class="dropbtn">Devlogs
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="/sub/mahou-shoujo-monogatari-devlogs" class="dropdown-link">Magical Girl Saga</a>
+                    </div>
+                </div>
+                <li class="navLink"><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+
+        <h1 id="post-title">Magical Girl Saga Devlog[5]</h1>
+        <div id="container">
+            <!--<div id="video"><iframe></iframe></div>-->
+            <h2 id="post-title">Enemy Overworld Encounters and Battles</h2>
+            <p id="preview">Hello everyone and welcome to the fifth devlog for my 2D indie game in Godot 4, <i>Mahou Shoujo
+                    Monogatari</i> (aka Magical Girl Saga)! In this devlog, I will be discussing how I created 
+                    random enemy encountering in the overworld as well as actually battling the randomly encountered monsters, so without 
+                    further ado, let's get right into devlog #5.
+            <h4>Overview</h4>
+            <br>First off, I'll discuss what I want to do in terms of how I envision the player and player's party battling enemies,
+            encountering enemies and handling various actions during battle, such as damaging enemies, using items to buff stats during battle 
+            or heal damage dealt and running from an encountered enemy. My initial thought was to use Final Fantasy 6's random encounter enemy system,
+            which to put simply will keep track of how many seconds have passed while the player is currently moving, selects a number at random between
+            0 and 256 and then it will take that number, add it to the counter and if the counter value is greater than the counter value divided
+            by 256 and the player's isBattling boolean is set to false, then it will select an enemy at random to load into the battle scene for the
+            player and party to battle, with the enemy pool being different depending on which area of the overworld the player is currently in. My next
+            thought was figuring out how to make the monsters appear at random, and the best way I thought about this was to use Godot's Resources feature (elaboration
+            in the next section) to create the various randomly encountered monsters for each area. Now with the basics laid out, let's go into some details
+            on how I will make all of this work, starting with monster handling.
+            <br><br>
+            <img class="responsive" src="../Assets/battleExample.png">
+            <figcaption>A screenshot showing the player and player's party on the left side and an monster wolf enemy to the right.</figcaption>
+            <br><br>
+            <h4>Monster Entity Mechanics</h4>
+                So as I mentioned above, I'm handling monsters by using Godot's Resource class. Godot's Resource class is essentially a class that allows
+                for things such as textures, integers, arrays and practically any other Godot tool to be set in a single file that can be accessed and modified
+                at will. In this case, we'll make a base Resource called Monsters, write a script that exports the HP, attack and sprite texture of the monster and then
+                use that Resource to create other sub resources for each individual monster. By doing it this way, it ensures that all the monsters inherit the same
+                properties while also allowing for quick adjustments of each of the monsters' properties at will without having to modify the C# script constantly and for 
+                every single instance of a monster of some sort. You could say that Godot's Resource is essentially super simplified inheritance, and its feature of
+                being able to export different elements of my monster characters and change them for each monster based on the monsters base resource is quite
+                useful in this instance.
+                <br><br>
+                The next step was to figure out how to then turn these Monsters resource files into actual instances of monsters in the battle scene. The first step,
+                I learned that we should create a new Node2D object first, by calling the new Node2D() method od Godot's C# library. This will then allow us to add a 
+                child Sprite2D node using the new Sprite2D() method of the Godot C# library and then we can load the resource of the monster we desire, set the texture 
+                of the new Sprite2D object to the texture found in the resource file, and then apply each property of the resource file to the current instance of that 
+                monster that we created using the Node2D we created earlier programmatically. This way, when an entity is passed through the method that draws everything 
+                to the battle scene, it will correctly display the desired monster and set its attributes appropriately.
+
+                <br><br>
+                <code><pre>
+                    if(monster != null) {
+                        GD.Print("Adding monsters to scene!");
+                        var enemy = (Monsters)ResourceLoader.Load("res://Assets/Monsters/" + monster.name + ".tres");
+                        if (enemy != null) {
+                            var monsterInstance = new Node2D();
+                             var sprite = new Sprite2D();
+                             sprite.Texture = enemy.texture;
+                            monsterInstance.AddChild(sprite);
+                            monsterBattlingParty.AddChild(monsterInstance);
+                            monsterInstance.Position = new Vector2(monsterInstance.Position.X, monsterInstance.Position.Y);
+                            monsterInstance.Scale = new Vector2(2f, 2f);
+                        }
+                
+                        else {
+                            GD.Print("Monster scene is null!");
+                        }
+                    }
+                
+                    else {
+                        GD.Print("Monster is null!");
+                    }</pre></code>
+                    <br><br>
+
+                    In the above, you can see that we pass a variable 'monster' that gets assigned in a separate class to the battle scene, to which then we check
+                    if it is null, before we then grab the appropriate resource file in the Resource Loader, create the new Node2D and Sprite2D elements and then add them
+                    to their correct parents, before finally setting the texture of the Sprite2D to the texture of the monster found in the resource file and then ending off 
+                    by positioning and scaling the newly built monster node properly, thus creating a functional randomly encountered monster that has all of the desired 
+                    attributes.
+
+                    <br> <br>
+                    <h4>Turn Based Dialogue</h4>
+                    The next thing after being able to pass a randomly selected monster is determining turns between the player and monster, and the 
+                    most essential part of turn based combat other than the actions menu is the dialogue that tells you whose turn it is currently.
+                    In order to do this, I had to create a new class, BattleDialogue, attach it to a custom BattleDialogue scene I created that contains
+                    all the parts of the dialogue window, such as the sprite and text box, and rewrite the dialogue so that instead of accepting a 
+                    2D array with a dialogueSet and dialogueIndex variable (just like we have it with the normal dialogue system), we pass the currentDialogue
+                    variable to the drawDialogue method, intialise lines of the turn based dialogue to a 1D array called partyMembersDialogue and then set the 
+                    currentDialogue to the index of the partyMembersDialogue array that we desire when advancing the turn. Below is the code for all of this:
+
+                    <br><br>
+                    <code><pre>
+                        private int currentTurnIndex = 0;
+                        private string[] partyMembersDialogue = new string[20];
+                        
+                        public override void _Ready()
+                        {
+                            dialogueBox = GetNode<NinePatchRect>("DialogueWindow");
+                            dialogueText = GetNode<RichTextLabel>("DialogueText");
+                            timer = GetNode<Timer>("DialogueText/Timer");
+                            audioPlayer = GetNode<AudioStreamPlayer2D>("/root/BattleScreen/TalkSound");
+                            timer.Timeout += _on_timer_timeout;
+                            InitializeStartingPartyDialogues();
+                        }
+                        
+                        public override void _Process(double delta)
+                        {
+                            if (Input.IsActionJustPressed("ui_interact"))
+                            {
+                                if (isDialogueFinishedDrawing)
+                                {
+                                    clearDialogue();
+                                    AdvanceTurn();
+                                }
+                            }
+                        }
+        
+                        public void InitializeStartingPartyDialogues()
+                        {
+                            partyMembersDialogue[0] = "What will Jeanne do?";
+        
+                            currentTurnIndex = 0;
+                        }
+        
+                        public void drawDialogue()
+                        {
+                            if (!string.IsNullOrEmpty(currentDialogue))
+                            {
+                                dialogueBox.Visible = true;
+                                isTalking = true;
+                                
+                                combinedText = "";
+                                characters = currentDialogue.ToCharArray();
+        
+                                for (charIndex = 0; charIndex < characters.Length; charIndex++) { 
+                                    timer.Start(0.025); 
+                                    combinedText += characters[charIndex]; 
+                                    currentDialogue=combinedText; 
+                                    dialogueText.Text=combinedText; }
+                                    isDialogueFinishedDrawing=false; 
+                                } 
+                            
+                            else { 
+                                isDialogueFinishedDrawing=true; 
+                                clearDialogue(); 
+                            } 
+                        }
+                            
+                        private void clearDialogue() { 
+                            dialogueBox.Visible=false;
+                            currentDialogue="" ;
+                            dialogueText.Text=""; 
+                            charIndex=0; combinedText="" ; 
+                            dialogueText.VisibleCharacters=0; 
+                        } 
+                        
+                        private void _on_timer_timeout() { 
+                            dialogueText.VisibleCharacters++; 
+                            if (talkSound !=null) {
+                                audioPlayer.Stream=talkSound; audioPlayer.Play(); 
+                            } 
+                            
+                            if (dialogueText.VisibleCharacters>=characters.Length) {
+                                timer.Stop();
+                                dialogueText.VisibleCharacters = -1;
+                                audioPlayer.Stop();
+                                isDialogueFinishedDrawing = true;
+                            }
+                        }
+        
+                            private void AdvanceTurn()
+                            {
+                                if (currentTurnIndex < partyMembersDialogue.Length && partyMembersDialogue[currentTurnIndex] !=null)
+                                    { 
+                                        currentDialogue=partyMembersDialogue[currentTurnIndex];
+                                        drawDialogue(); 
+                                        currentTurnIndex++; }
+                                else { 
+                                    GD.Print("End of party member dialogues."); 
+                                    clearDialogue(); 
+                                } 
+                            }
+                    </pre></code>
+
+                    <br>
+                    <h4>Battle Actions Menu</h4>
+                    Now we need to add in the actions menu so that the player knows what actions they can do during battle. To do this, we add in the 
+                    following code:
+
+                    <code><pre>
+                        public void setActionsMenu() {
+                            var fontFile = (FontFile)ResourceLoader.Load("res://Piksel-JAGa.ttf");
+                            battleActions[0] = "Attack";
+                            battleActions[1] = "Magic";
+                            battleActions[2] = "Run";
+                            
+                            foreach (Node child in actionsMenu.GetChildren())
+                            {
+                                if (child is Label)
+                                {
+                                    child.QueueFree();
+                                }
+                            }
+                            
+                            for (int i = 0; i < battleActions.Length; i++) { 
+                                Label actionLabel=new Label(); 
+                                actionLabel.Text=battleActions[i];
+                                actionLabel.Name="ActionLabel" + i; 
+                                actionLabel.AddThemeFontOverride("font", fontFile);
+                                actionLabel.HorizontalAlignment=HorizontalAlignment.Center; 
+                                actionsLabels.AddChild(actionLabel); 
+                                GD.Print("Adding action: " + battleActions[i]);
+                            }
+                                    
+                            if(battleDialogueScreen.currentTurnIndex == 0 || battleDialogueScreen.currentTurnIndex == 1) {
+                                //Draw actions menu for the player
+                                actionsMenu.Visible = true;
+                                selectedActionIndex = 0;
+                                ChangeSelection(0);
+                                
+                                GD.Print(" Selected action index: " + selectedActionIndex);
+                            }
+                        }
+                    </pre></code>
+                    <br>
+                    With this code, we assign the three actions a character can do in an array called battleActions. In this instance, we use 
+                    Attack, Magic and Run as the three options for a character to take during battle. We then toggle the visibility of the actions 
+                    menu depending on what turn it is, if it's the player or a party member's turn or if it's the enemy(ies)'s turn to attack, and we 
+                    use Labels as a way of adding the actions text to the actions menu sprite. By dynamically adding in the Labels with the names of the 
+                    actions in the battleActions array, we are able to easily add in all the neccessary actions a player can choose into a VBox container, and 
+                    aligning the text of the Labels to the centre in the VBox container, we now have an actions menu! Now the next step is to add in the functionality 
+                    of the actions menu, so we do that by having the currently hovered over action be highlighted in yellow and we achieve this using this code:
+
+                    <code><pre>
+                            private void ChangeSelection(int direction)
+                            {
+                                // Deselect the current label
+                                if (actionsLabels.GetChildCount() > 0)
+                                {
+                                    Label currentLabel = (Label)actionsLabels.GetChild(selectedActionIndex);
+                                    currentLabel.Modulate = new Color(1, 1, 1); // Reset color to white
+                                }
+                            
+                                // Move the selection index
+                                selectedActionIndex = (selectedActionIndex + direction) % actionsLabels.GetChildCount();
+                            
+                                // Wrap around if out of bounds
+                                if (selectedActionIndex < 0) { selectedActionIndex=actionsLabels.GetChildCount() - 1; } // Highlight the new label Label
+                                    newLabel=(Label)actionsLabels.GetChild(selectedActionIndex); 
+                                    newLabel.Modulate=new Color(1, 1, 0); // Highlight color (yellow) 
+                                    // Play selection sound 
+                                    if (selectionSound !=null) { 
+                                        selectionSound.Play(); 
+                                    } 
+                                
+                            }
+                    </pre></code>
+                    <br> 
+                    With this code, now the currently hovered pver action highlights in yellow, now to add in the functionality of toggling between actions with this code below: 
+                    <code><pre>
+                            private void HandleInput()
+                            {
+                                if (Input.IsActionJustPressed("ui_up"))
+                                {
+                                    ChangeSelection(-1);
+                                }
+                                else if (Input.IsActionJustPressed("ui_down"))
+                                {
+                                    ChangeSelection(1);
+                                }
+                                else if (Input.IsActionJustPressed("ui_select"))
+                                {
+                                    ExecuteAction();
+                                }
+                            }
+                    </pre></code>
+                    <br>
+                    With this code, we can now use the up and down movement keys to change the selection of the actions menu and then when the enter key 
+                    is pressed, it will call the ExecuteAction method and execute whatever action we have programmed to that selected action.
+
+                    <img src = "../Assets/battledemo2.png" class = "responsive">
+                    <figcaption>Image showcasing the actions menu with the 'attack' option selected.</figcaption>
+                    <br>
+                    Now the next step is to add a cursor above the currently active party member's turn, so that way, the player can distinguish
+                    between whose turn it is and what they can do. To add this, we add in a Sprite2D node with the texture of our cursor, and the programmatically 
+                    add it to the correct character's turn by using the following code:
+                    <code><pre>
+                        public void UpdateCursorPosition(Vector2 position)
+                        {
+                            cursor.Position = position + new Vector2(-2, -40); // Adjust offset as needed
+                            cursor.Visible = true; // Show the cursor
+                        }
+                        
+                        public void UpdateCursorForTurn()
+                        {
+                            int characterIndex = 0;
+                            foreach (Node child in playerBattlingParty.GetChildren())
+                            {
+                                if (child is CharacterBody2D)
+                                {
+                                    if (characterIndex == battleDialogueScreen.currentTurnIndex)
+                                    {
+                                        //GD.Print("Character is not null! " + child);
+                                        UpdateCursorPosition(((Node2D)child).Position);
+                                        return;
+                                    }
+                                characterIndex++;
+                                }
+                            }
+                        }
+                    </pre></code>
+                    <br> 
+                    Now with this code implemented, the cursor now looks like this and correctly shows the currently active character's turn.
+                    <img id="postimg" class = "responsive" src = "../Assets/battleCursorDemo.png">
+                    <figcaption>Image of the battle scene with a green arrow cursor over the currently active character's turn in the 
+                        battle sequence.
+                    </figcaption>
+
+            </p>
+        </div>
+
+</body>
+<footer>
+    © Dawnlight Dev, 2023-2024
+</footer>
+
+</html>
