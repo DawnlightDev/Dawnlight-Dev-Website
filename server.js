@@ -5,7 +5,7 @@ const path = require('path');
 const { JSDOM } = jsdom;
 
 const app = express();
-const port = process.env.PORT
+const port = 3300;
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');

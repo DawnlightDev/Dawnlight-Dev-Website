@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/styles.css" rel="stylesheet">
+    <link href="/Assets/icon.png" rel="icon">
+    <title>Magical Girl Saga Dev Log #5 | Dawnlight Dev</title>
+</head>
+
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="/index.js"></script>
+    <div>
+        <div class="banner-container">
+            <div class="banner">
+                <h1 id="header">Dawnlight Dev</h1>
+            </div>
+        </div>
+        <button class="mobile-nav-toggle" aria-controls="primary-navigation" aria-expanded="false"> <span
+                class="sr-only"></span> </button>
+        <nav id="navbar">
+            <ul id="navbarList" data-visible="false" class="primary-navigation flex">
+                <li class="navLink active"><a href="/index">Home</a></li>
+                <li class="navLink"><a href="/about">About</a></li>
+                <li class="navLink"><a href="/games">Games</a></li>
+                <div class="dropdown">
+                    <button class="dropbtn">Devlogs
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="/sub/magical-girl-saga-devlogs" class="dropdown-link">Magical Girl Saga</a>
+                    </div>
+                </div>
+                <li class="navLink"><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+
+        <h1 id="post-title">Magical Girl Saga Devlog[5]</h1>
+        <div id="container">
+            <!--<div id="video"><iframe></iframe></div>-->
+            <h2 id="post-title">Revamping The UI and Starting The Weapon Equipment System</h2>
+            <p id="preview">Hello everyone and welcome to the 5th devlog for my 2D JRPG indie game, <i>Magical Girl
+                    Saga</i>! In this devlog, we'll be touching upon a minor change in the inventory UI as well as 
+                    discussing my progress so far in creating the equipment system, so without further ado, let's jump into devlog[5]!
+            <img id="postimg" class="responsive" src="../Assets/EquipmentSystemPreview.png">
+            <h4>Part 1 - UI Revamp</h4>
+            <br>First off, I'll discuss what changes I made to the UI. The first major change was changing the background of the inventory UI.
+            I simply changed it from a whole book outline to just a basic menu with a book like interface on the side of the inventory. I also
+            updated the bookmark tabs for all the features of the inventory, instead of having larger tabs with words, I went with smaller
+            tabs and icons to indicate which menu is currently open. 
+            I then also added in the player's portrait to tell player status, as well as the currently equipped weapon and the player's currently selected 
+            party members and their status and stats. A change I made was an ability to toggle between the player weapon and party settings to the player's stats by pressing the 
+            2 key on the keyboard, so that way, the user can use the 1 key to cycle through the three inventory types and can press 2 to toggle between 
+            player stats and player information.
+            <br><br>
+            <img class="responsive" src="../Assets/InventoryNewUI.png">
+            <br>
+            <img class="responsive" src="../Assets/InventoryNewUI2.png">
+            <figcaption>Two screenshots showing the new revamped UI for the inventory menu and player stats toggleable screen.</figcaption>
+            <br>
+            <br>
+            <img class = "responsive" src = "../Assets/NewSubMenuUI.png">
+            </p>
+            <br>
+            <h4> Part 2 - Weapon Equipment System</h4>
+            <p>
+                The next thing we need to focus on now that we have a sub menu to select a party member to equip and unequip a weapon to is 
+                to actually implement the ability to assign a weapon to the selected party members.
+                <br>
+                <br>
+                In that regard, we added the ability for a sub menu to show up when selecting a weapon to equip to one of the player's
+                party members, so now when a weapon is selected, the description text changes to say select a character who the weapon will be equipped
+                to and switch the control focus from the inventory menu to the new equipping sub menu. We then added in some logic for 
+                equipping weapons, with additional logic for if a character already has the selected weapon equipped and if so, reassign it
+                to the newly selected character.
+                <br>
+                <br>
+                <code><pre>
+                private void EquipWeapon(Node characterNode)
+                {
+                    if (selectedWeapon == null)
+                    {
+                        GD.Print("Weapon is null!");
+                        return;
+                    }
+                    
+                    // Call ReassignWeapon to ensure the weapon is removed from any character that has it equipped
+                    ReassignWeapon(characterNode);
+                    
+                    // Now equip the weapon to the characterNode passed into the method
+                    if (characterNode == player)
+                    {
+                        // Equip the weapon for player_jeanne
+                        player.currentWeapon = selectedWeapon;
+                        player.attack += selectedWeapon.damage; // Apply the weapon's damage modifier
+                        GD.Print($"Weapon {selectedWeapon.name} equipped to player_jeanne");
+                    
+                        // Update the equipped weapon slot in the UI for player_jeanne
+                        equippedSlot1.Texture = selectedWeapon.texture; // Display the weapon's sprite in player_jeanne's slot
+                    }
+                    
+                    else if (characterNode is Entity entityCharacter)
+                    {
+                        // Equip the weapon to the party member
+                        for (int i = 0; i < playerParty.party.Length; i++) { 
+                            Entity partyMember=playerParty.party[i]; 
+                            if(partyMember==entityCharacter) { 
+                                // Equip the weapon to the party member 
+                                partyMember.currentWeapon=selectedWeapon;
+                                partyMember.attack +=selectedWeapon.damage; // Apply the weapon's damage modifier 
+                                GD.Print($"Weapon {selectedWeapon.name} equipped to {partyMember.Name}"); // Update the corresponding equipped slot sprite if (i==0)
+                                equippedSlot2.Texture=selectedWeapon.texture; // First party member 
+                                else if (i==1) {
+                                equippedSlot3.Texture=selectedWeapon.texture; // Second party member break; 
+                                }
+                            
+                            }
+                        }    
+                    else { 
+                        GD.Print("Selected character is not of a valid type."); 
+                    } 
+                }
+
+            	private void ReassignWeapon(Node newCharacterNode)
+                {
+                    GD.Print("Reassigning weapon!");
+
+                    if (selectedWeapon == null)
+                    {
+                        GD.Print("Weapon is null! Cannot reassign.");
+                        return;
+                    }
+
+                    // Handle if the new character node is an NPC (party member)
+                    if (newCharacterNode is Entity newEntityCharacter)
+                    {
+                        GD.Print("Entity selected!");
+
+                        // Check if the NPC already has the selected weapon equipped
+                        if (newEntityCharacter.currentWeapon == selectedWeapon)
+                        {
+                            GD.Print($"Weapon {selectedWeapon.name} is already equipped by {newEntityCharacter.Name}. No need to reassign.");
+                            return; // No need to reassign if already equipped
+                        }
+
+                        // If the NPC has a different weapon, unequip it
+                        if (newEntityCharacter.currentWeapon != null)
+                        {
+                            GD.Print($"{newEntityCharacter.Name} has a different weapon equipped. Unequipping...");
+                            UnequipWeapon(newEntityCharacter);
+                        }
+
+                        // Check if the player or any NPC in player's party currently has the selected weapon equipped
+                        CheckAndUnequipWeaponFromPartyOrPlayer(selectedWeapon);
+
+                        // Equip the weapon to the NPC
+                        newEntityCharacter.currentWeapon = selectedWeapon;
+                        GD.Print($"Weapon {selectedWeapon.name} reassigned to {newEntityCharacter.Name}.");
+                    }
+                    // Handle if the player is selected
+                    else if (newCharacterNode == player)
+                    {
+                        GD.Print("Player selected!");
+
+                        // Check if the player's party members have the weapon
+                        CheckAndUnequipWeaponFromPartyOrPlayer(selectedWeapon);
+
+                        // If the player has a different weapon equipped, unequip it
+                        if (player.currentWeapon != null && player.currentWeapon != selectedWeapon)
+                        {
+                            GD.Print($"Player has a different weapon equipped. Unequipping current weapon.");
+                            UnequipWeapon(player);
+                        }
+
+                        // Equip the selected weapon to the player
+                        player.currentWeapon = selectedWeapon;
+                        GD.Print($"Weapon {selectedWeapon.name} reassigned to player.");
+                    }
+                    else
+                    {
+                        GD.Print("The selected node is neither the player nor a valid party member. Cannot reassign.");
+                        return;
+                    }
+                }
+            </pre></code>
+                <br>
+                And with that, we now have a weapon equipment system that is fully functional! Though, this is all for this devlog since
+                the next step is to implement the battle system using these newly equippable weapons, so in that regard, Adieu! See you
+                in the next devlog!
+            </p>
+        </div>
+
+</body>
+<footer>
+    © Dawnlight Dev, 2023
+</footer>
+
+</html>

@@ -1,3 +1,5 @@
+/*@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');*/
+
 @font-face {
   font-family: "Old School Adventures";
   src: url("OldSchoolAdventures.ttf")
@@ -5,12 +7,19 @@
 
 body {
   margin: 0;
-  font-family: calibri;
+  font-family: "Luckiest Guy", calibri;
   font-size: 1.5rem;
   color:#402060;
   background-color: #E6E6FA;
   text-align: center;
 }
+
+/* .luckiest-guy-regular {
+  font-family: "Luckiest Guy", cursive;
+  font-weight: 200;
+  font-style: normal;
+} */
+
 
 footer {
   text-align: left;
